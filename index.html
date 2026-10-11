@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F5D50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="분수 곱셈">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>똑똑 수학탐험대 · 분수의 곱셈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--board:#2F5D50;--board2:#24493F;--chalk:#FDFBF3;--paper:#FFF8E8;--ink:#2B2B2B;--sub:#6B6B6B;--accent:#FF7043;--line:#E8DDC6;--ok:#2E7D32}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Gowun Dodum','Noto Sans KR',sans-serif;font-size:17px}
+header{background:var(--board);color:var(--chalk);padding:14px 20px 0;border-bottom:8px solid #8B5E3C}
+h1{font-family:Jua;font-weight:400;margin:0 0 10px;font-size:26px;letter-spacing:.5px}
+h1 small{font-size:15px;opacity:.75;margin-left:8px}
+h3{font-family:Jua;font-weight:400;font-size:21px;margin:0 0 12px;color:var(--board)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font-family:Jua;font-size:17px;background:var(--board2);color:#cfe3da;border:0;border-radius:12px 12px 0 0;padding:10px 16px;cursor:pointer}
+.tab.on{background:var(--paper);color:var(--board)}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 100px}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 0 var(--line),0 6px 18px rgba(0,0,0,.05);padding:18px 20px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0}
+.cap{font-family:Jua;color:var(--sub);font-size:15px;min-width:74px}
+.seg{display:inline-flex;background:#F3EEE2;border-radius:12px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;font:inherit;font-family:Jua;font-size:16px;padding:8px 14px;border-radius:10px;cursor:pointer;color:#5b5b5b}
+.seg button.on{background:var(--board);color:#fff}
+.btn{border:2px solid var(--board);background:#fff;color:var(--board);font-family:Jua;font-size:16px;padding:8px 16px;border-radius:12px;cursor:pointer}
+.btn.main{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{border-color:#CFC6B2;color:#6b5e45}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:active{transform:translateY(1px)}
+.nums{display:flex;flex-wrap:wrap;gap:10px}
+.stp{display:inline-flex;align-items:center;gap:6px;background:#FBF7EC;border:1px solid var(--line);border-radius:12px;padding:4px 8px}
+.stp .lb{font-size:14px;color:var(--sub);margin-right:2px}
+.stp button{width:32px;height:32px;border-radius:50%;border:0;background:var(--board);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.stp b{min-width:28px;text-align:center;font-family:Jua;font-size:22px}
+.expr{font-family:Jua;font-size:34px;text-align:center;padding:8px 0 2px;color:var(--board2)}
+.expr .q{color:var(--accent)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;line-height:1.05;font-size:.82em}
+.fr .nu{border-bottom:2px solid currentColor;padding:0 .18em}
+.fr .de{padding:0 .18em}
+.mx{vertical-align:middle}
+.guide{background:#F1F8F4;border-left:6px solid var(--board);border-radius:10px;padding:10px 14px;margin:8px 0;line-height:1.9}
+.wsWrap{border:2px dashed #E2D6BB;border-radius:16px;background:#FFFDF7;overflow:hidden}
+#ws{width:100%;display:block;touch-action:pan-y pinch-zoom;user-select:none}
+#ws text,svg text{font-family:'Gowun Dodum',sans-serif}
+.piece{cursor:grab;transition:transform .5s cubic-bezier(.3,1.25,.5,1)}
+.copy{transition:transform .5s cubic-bezier(.3,1.25,.5,1)}
+.copy .handle{cursor:grab}
+.copy>g:not(.handle){cursor:grab}
+.dragging{transition:none!important;cursor:grabbing;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+.noanim .piece,.noanim .copy{transition:none!important}
+.hide{display:none}
+.result{margin-top:10px;font-size:19px;line-height:2;min-height:40px;padding:8px 14px;border-radius:12px;background:#FFF3E0}
+.result.ok{background:#E8F5E9;color:var(--ok)}
+.eqs p{margin:8px 0;font-size:24px;line-height:2.1;animation:pop .45s both}
+.eqs p.small{font-size:17px;color:var(--sub);line-height:1.8}
+.eqs .tag{display:inline-block;font-family:Jua;font-size:15px;background:var(--board);color:#fff;border-radius:8px;padding:2px 8px;margin-right:8px;vertical-align:middle}
+.note{background:#FFFBEA;border-radius:10px;padding:10px 14px;line-height:1.9}
+svg.vz{width:100%;display:block}
+.mot .q{font-family:Jua;font-size:30px;color:var(--board2);margin:6px 0 10px}
+.mot .num{display:inline-block;background:var(--accent);color:#fff;border-radius:50%;width:40px;height:40px;text-align:center;line-height:40px;margin-right:10px;font-size:22px}
+.mot input{flex:1;min-width:220px;font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:12px}
+.motA{font-size:22px;color:var(--ok);min-height:38px;margin:8px 0;line-height:2}
+.dots{display:flex;gap:8px;margin-bottom:6px}
+.dots span{width:14px;height:14px;border-radius:50%;background:#E0D6BF;cursor:pointer}
+.dots span.on{background:var(--accent)}
+.dots span.done{background:#A5C9B8}
+#motSvg{touch-action:pan-y pinch-zoom;user-select:none}
+.mdrag{cursor:grab}
+.pop{animation:pop .5s both}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.qin{width:58px;font:inherit;font-family:Jua;font-size:22px;text-align:center;padding:4px;border:2px solid var(--line);border-radius:8px}
+.qin.w{width:70px}
+.frIn{display:inline-flex;flex-direction:column;align-items:center;gap:3px;vertical-align:middle}
+.frIn i{display:block;width:62px;height:3px;background:var(--ink)}
+#qMsg{font-size:19px;line-height:2}
+nav.foot{position:fixed;left:0;right:0;bottom:0;background:rgba(255,248,232,.96);border-top:1px solid var(--line);padding:10px 16px;display:flex;justify-content:space-between;gap:10px;z-index:5}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--board2);color:#fff;padding:12px 20px;border-radius:14px;font-size:17px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:9;max-width:92vw;text-align:center;line-height:1.8}
+.toast.show{opacity:1}
+/* ---- 처음 화면 ---- */
+#home .hero{text-align:center;padding:26px 18px}
+#home h2{font-family:Jua;font-weight:400;font-size:30px;margin:0 0 6px;color:var(--board)}
+#home .hero p{margin:0;color:var(--sub);font-size:18px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.choice{border:0;background:#fff;border-radius:22px;padding:22px 16px 20px;cursor:pointer;box-shadow:0 3px 0 var(--line),0 8px 22px rgba(0,0,0,.06);font:inherit;text-align:center;transition:transform .15s,box-shadow .15s;border-top:10px solid var(--c)}
+.choice:hover,.choice:focus-visible{transform:translateY(-4px);box-shadow:0 6px 0 var(--line),0 14px 26px rgba(0,0,0,.09)}
+.choice svg{width:100%;max-width:220px;height:auto;display:block;margin:4px auto 12px}
+.choice .ex{font-family:Jua;font-size:34px;color:var(--board2)}
+.choice .nm{font-family:Jua;font-size:23px;color:var(--c2);margin-top:6px}
+.choice .ds{color:var(--sub);margin-top:6px;font-size:16px}
+/* ---- 공부 화면 위쪽 ---- */
+#lessonBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+#lessonTitle{font-family:Jua;font-size:22px;color:var(--board)}
+.pills{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-left:auto;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{display:flex;align-items:center;gap:6px;border:0;background:#EFE8D6;color:#7A6E55;border-radius:999px;padding:6px 14px 6px 6px;font-family:Jua;font-size:15px;cursor:pointer;white-space:nowrap}
+.pill b{display:inline-block;width:26px;height:26px;line-height:26px;border-radius:50%;background:#fff;text-align:center;font-weight:400}
+.pill.on{background:var(--board);color:#fff}.pill.on b{color:var(--board)}
+.pill.done{background:#CFE3D8;color:var(--board)}
+/* ---- 선택형 질문 ---- */
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0 4px}
+.opt{font-family:Jua;font-size:21px;padding:14px 12px;border:3px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);cursor:pointer;min-height:64px;line-height:1.6}
+.opt:hover:not(:disabled){border-color:#BFD8CB;background:#F7FBF8}
+.opt.ok{border-color:#43A047;background:#E8F5E9;color:#1B5E20}
+.opt.no{border-color:#EF9A9A;background:#FFEBEE;color:#B71C1C}
+.opt.shake{animation:shake .4s}
+.opt:disabled{cursor:default}
+.opt:disabled:not(.ok){opacity:.5}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.motA.hint{color:#C62828}
+.btn.big{font-size:21px;padding:14px 26px}
+/* ---- 모바일 · 태블릿 ---- */
+html{-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:contain}
+button,input{touch-action:manipulation}
+header{padding-top:calc(14px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right))}
+#ws,#motSvg{-webkit-user-select:none;-webkit-touch-callout:none}
+.piece,.copy,.mdrag{touch-action:none}
+nav.foot{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;flex:0 0 auto}
+/* 손가락으로 누르기 쉬운 크기 */
+@media (pointer:coarse){
+  .stp button{width:42px;height:42px;font-size:24px}
+  .seg button{padding:11px 14px}
+  .btn{padding:11px 16px;min-height:46px}
+  .dots span{width:20px;height:20px}
+  .qin{font-size:24px;padding:8px 4px}
+}
+/* 태블릿 */
+@media (max-width:900px){
+  .choices{grid-template-columns:1fr 1fr}
+  main{padding:14px 12px calc(100px + env(safe-area-inset-bottom))}
+  .card{padding:16px 16px}
+}
+/* 휴대폰 */
+@media (max-width:640px){
+  body{font-size:16px}
+  h1{font-size:21px;margin-bottom:8px} h1 small{display:block;margin:2px 0 0;font-size:13px}
+  header{padding:10px 12px 0}
+  .tab{font-size:15px;padding:9px 12px}
+  main{padding:10px 8px calc(96px + env(safe-area-inset-bottom))}
+  .card{padding:12px 12px;border-radius:14px;margin-bottom:12px}
+  h3{font-size:19px}
+  .cap{min-width:0;width:100%;margin-bottom:-4px}
+  .seg{display:flex;width:100%}
+  .seg button{flex:1 1 0;font-size:14px;padding:10px 4px}
+  #swapBtn,#randBtn{flex:1 1 40%}
+  .nums{gap:6px;width:100%}
+  .stp{flex:1 1 calc(50% - 6px);justify-content:space-between;padding:4px 6px}
+  .stp .lb{font-size:12.5px}
+  .expr{font-size:26px}
+  .guide{font-size:15px;padding:8px 10px;line-height:1.8}
+  .result{font-size:16px;padding:8px 10px}
+  .mot .q{font-size:22px} .mot .num{width:34px;height:34px;line-height:34px;font-size:19px}
+  .choices{grid-template-columns:1fr;gap:12px}
+  .choice{display:grid;grid-template-columns:110px 1fr;align-items:center;text-align:left;gap:4px 12px;padding:14px}
+  .choice svg{grid-row:1/4;margin:0;max-width:110px}
+  .choice .ex{font-size:26px}.choice .nm{font-size:19px;margin:0}.choice .ds{font-size:14px;margin:0}
+  #home h2{font-size:23px}
+  #lessonTitle{font-size:18px}
+  .pills{margin-left:0;width:100%}
+  .pill:not(.on) span{display:none}
+  .pill:not(.on){padding:6px}
+  .opts{grid-template-columns:1fr}
+  .opt{font-size:19px;min-height:56px}
+  .motA{font-size:18px}
+  .eqs p{font-size:19px;line-height:2;overflow-x:auto}
+  .eqs p.small{font-size:15px}
+  .note{font-size:15px}
+  #qz .row{font-size:22px!important}
+  nav.foot{padding-left:8px;padding-right:8px}
+  nav.foot .btn{flex:1;font-size:15px;padding:10px 6px}
+}
+@media (orientation:landscape) and (max-height:500px){
+  header{padding-top:6px} h1{font-size:18px;margin-bottom:4px} h1 small{display:inline}
+  nav.foot{position:static}
+  main{padding-bottom:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>똑똑 수학탐험대 <small>분수의 곱셈 탐험</small></h1>
+</header>
+
+<main>
+  <!-- 처음 화면: 공부할 곱셈 고르기 -->
+  <section id="home">
+    <div class="card hero"><h2>오늘은 어떤 곱셈을 탐험해 볼까요?</h2><p>공부하고 싶은 것을 눌러 보세요.</p></div>
+    <div class="choices">
+      <button class="choice" data-start="A" style="--c:#FF8A65;--c2:#E64A19">
+        <svg viewBox="0 0 220 60"><g stroke="#37474F" stroke-width="1.5"><rect x="4" y="16" width="60" height="28" fill="#fff"/><rect x="4" y="16" width="24" height="28" fill="#FF8A65"/><rect x="80" y="16" width="60" height="28" fill="#fff"/><rect x="80" y="16" width="24" height="28" fill="#4FC3F7"/><rect x="156" y="16" width="60" height="28" fill="#fff"/><rect x="156" y="16" width="24" height="28" fill="#AED581"/></g><text x="72" y="36" font-size="18" text-anchor="middle" fill="#5D4037">+</text><text x="148" y="36" font-size="18" text-anchor="middle" fill="#5D4037">+</text></svg>
+        <div class="ex"><span class="fr"><span class="nu">2</span><span class="de">5</span></span> × 3</div>
+        <div class="nm">진분수 × 자연수</div>
+        <div class="ds">분수를 여러 번 더해요</div>
+      </button>
+      <button class="choice" data-start="B" style="--c:#29B6F6;--c2:#0277BD">
+        <svg viewBox="0 0 220 60"><g stroke="#37474F" stroke-width="1.5"><rect x="10" y="20" width="200" height="28" fill="#fff"/><rect x="10" y="20" width="100" height="28" fill="#29B6F6"/><line x1="60" y1="20" x2="60" y2="48"/><line x1="110" y1="20" x2="110" y2="48" stroke-width="3"/><line x1="160" y1="20" x2="160" y2="48"/></g><path d="M12 14 V8 H108 V14" fill="none" stroke="#0277BD" stroke-width="2.5"/></svg>
+        <div class="ex">4 × <span class="fr"><span class="nu">1</span><span class="de">2</span></span></div>
+        <div class="nm">자연수 × 진분수</div>
+        <div class="ds">자연수의 몇 분의 몇을 구해요</div>
+      </button>
+      <button class="choice" data-start="C" style="--c:#8BC34A;--c2:#558B2F">
+        <svg viewBox="0 0 220 60"><g stroke="#37474F" stroke-width="1.5"><rect x="20" y="16" width="80" height="28" fill="#8BC34A"/><rect x="100" y="16" width="80" height="28" fill="#fff"/><rect x="100" y="16" width="32" height="28" fill="#8BC34A"/></g><g stroke="#37474F" stroke-opacity=".35"><line x1="36" y1="16" x2="36" y2="44"/><line x1="52" y1="16" x2="52" y2="44"/><line x1="68" y1="16" x2="68" y2="44"/><line x1="84" y1="16" x2="84" y2="44"/><line x1="116" y1="16" x2="116" y2="44"/><line x1="148" y1="16" x2="148" y2="44"/><line x1="164" y1="16" x2="164" y2="44"/></g></svg>
+        <div class="ex">1<span class="fr"><span class="nu">2</span><span class="de">5</span></span> × 3</div>
+        <div class="nm">대분수 × 자연수</div>
+        <div class="ds">대분수를 여러 번 더해요</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- 공부 화면 위쪽: 단계 표시 -->
+  <div id="lessonBar">
+    <button id="homeBtn" class="btn ghost">⌂ 처음 화면</button>
+    <span id="lessonTitle"></span>
+    <div class="pills" id="stepPills"></div>
+  </div>
+
+  <!-- 수 바꾸기 (2~4단계 공통) -->
+  <div id="prob" class="card">
+    <div class="row"><span class="cap">수 바꾸기</span><div id="nums" class="nums"></div></div>
+    <div class="row">
+      <button id="swapBtn" class="btn ghost">⇄ 순서 바꾸기</button>
+      <button id="randBtn" class="btn ghost">새로운 수</button>
+    </div>
+    <div id="expr" class="expr"></div>
+  </div>
+
+  <!-- 1단계: 생각해 볼까요? -->
+  <section id="s0" class="step">
+    <div class="card mot">
+      <div class="dots" id="motDots"></div>
+      <div class="q" id="motQ"></div>
+      <div class="opts" id="motOpts"></div>
+      <div class="motA" id="motA"></div>
+      <svg id="motSvg" class="vz" viewBox="0 0 1000 250"></svg>
+      <div class="row" style="justify-content:space-between">
+        <button id="motPrev" class="btn ghost">◀ 이전 질문</button>
+        <button id="motNext" class="btn">다음 질문 ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2단계: 모형으로 해 볼까요? -->
+  <section id="s1" class="step">
+    <div class="card">
+      <div class="row">
+        <span class="cap">모형</span>
+        <div class="seg" id="modelSeg">
+          <button data-model="bar">분수 막대</button>
+          <button data-model="circle">원 모형</button>
+          <button data-model="poly">다각형 모형</button>
+        </div>
+        <span class="cap" style="margin-left:8px">모으는 곳</span>
+        <div class="stp"><span class="lb">전체 1의 개수</span><button id="kMinus">−</button><b id="kVal"></b><button id="kPlus">+</button></div>
+      </div>
+      <div class="row" id="bStageRow"><button id="bS1" class="btn"></button><button id="bS2" class="btn"></button></div>
+      <div id="guide" class="guide"></div>
+      <div class="wsWrap"><svg id="ws" viewBox="0 0 1000 500"><g id="Lf"></g><g id="Lc"></g><g id="Lp"></g></svg></div>
+      <div class="row" style="margin-top:10px">
+        <button id="gatherBtn" class="btn main">자동으로 모으기</button>
+        <button id="resetBtn" class="btn ghost">처음 상태로</button>
+      </div>
+      <div id="result" class="result"></div>
+    </div>
+  </section>
+
+  <!-- 3단계: 덧셈으로 알아볼까요? -->
+  <section id="s2" class="step">
+    <div class="card"><h3>같은 수를 여러 번 더해 볼까요?</h3><div id="addEq" class="eqs"></div></div>
+    <div class="card"><h3>수직선에서 뛰어 세기</h3>
+      <div class="row">
+        <button id="addNext" class="btn main">한 번 더하기 ▶</button>
+        <button id="addAll" class="btn">모두 보기</button>
+        <button id="addReset" class="btn ghost">처음부터</button>
+      </div>
+      <svg id="nl" class="vz" viewBox="0 0 1000 200"></svg>
+    </div>
+  </section>
+
+  <!-- 4단계: 몇 배일까요? -->
+  <section id="s3" class="step">
+    <div class="card"><h3>몇 배인지 알아볼까요?</h3><div id="timesTxt" class="eqs"></div><svg id="timesSvg" class="vz" viewBox="0 0 1000 220"></svg><p id="timesNote" class="note"></p></div>
+    <div class="card"><h3>곱셈을 하면 항상 커질까요?</h3>
+      <div class="row" id="cmpCtl"></div>
+      <svg id="cmpSvg" class="vz" viewBox="0 0 1000 180"></svg>
+      <p id="cmpMsg" class="note"></p>
+    </div>
+    <div class="card"><h3>스스로 풀어 보기</h3><div id="qz"></div></div>
+  </section>
+</main>
+
+<nav class="foot"><button id="prevStep" class="btn ghost">◀ 이전</button><button id="nextStep" class="btn main">다음 ▶</button></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   공통 상태 / 도우미
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const PAL  = ['#FF8A65','#4FC3F7','#AED581','#FFD54F','#BA68C8','#F06292','#4DB6AC','#9575CD','#FFB74D'];
+const GPAL = ['#FF7043','#29B6F6','#8BC34A','#FFC107','#AB47BC','#EC407A','#26A69A','#7E57C2','#FF9800','#8D6E63'];
+const STEPS = ['생각해 볼까요?','모형으로 해 볼까요?','덧셈으로 알아볼까요?','몇 배일까요?'];
+const TITLES = {A:'진분수 × 자연수', B:'자연수 × 진분수', C:'대분수 × 자연수'};
+const DEFAULTS = {A:{a:2,b:5,n:3,w:1}, B:{n:4,a:1,b:2,w:1}, C:{w:1,a:2,b:5,n:3}};
+const S = {step:0, mode:'A', model:'bar', a:2, b:5, n:3, w:1, K:null, bStage:0, addShown:0,
+           cm:4, cp:1, cq:2, mot:0, motItems:[], motSolved:new Set(), motWrong:[], motLast:-1};
+const LIMS = {
+  a:()=>[1,S.b-1], b:()=>[2,10], n:()=>[1,S.mode==='C'?5:9], w:()=>[1,3],
+  cm:()=>[1,6], cp:()=>[1,12], cq:()=>[1,6]
+};
+let BH = 46, HANDLE = 34;
+/* 화면 폭에 맞춘 그림 너비(px). 1 SVG 단위 ≈ 1 px 이 되도록 맞춰서
+   휴대폰에서도 조각·글자가 작아지지 않게 함 */
+let VW = 1000;
+const NARROW = () => VW < 600;
+function calcVW(){
+  const m=$('main'), ms=getComputedStyle(m), cs=getComputedStyle($('.card'));
+  const w=m.clientWidth-parseFloat(ms.paddingLeft)-parseFloat(ms.paddingRight)-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-4;
+  return Math.max(300,Math.min(1000,Math.round(w)));
+}
+function applyVW(){ VW=calcVW(); BH = NARROW()?42:46; HANDLE = NARROW()?30:34; }
+let G = {}, items = [], copies = [], frames = [], frameTop = 0, drag = null;
+
+const gcd = (x,y)=>{while(y){[x,y]=[y,x%y]}return x};
+const ri = (lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+const hasB = n => [0,1,3,6,7,8].includes(Math.abs(n)%10);   // 숫자 읽을 때 받침 여부
+const j = (n,a,b) => hasB(n)?a:b;                            // 조사 선택
+const F = (n,d) => `<span class="fr"><span class="nu">${n}</span><span class="de">${d}</span></span>`;
+const M = (w,n,d) => `<span class="mx">${w}</span>${F(n,d)}`;
+function totalUnits(){ const {mode,a,b,n,w}=S; return mode==='C' ? (w*b+a)*n : a*n; }
+function valHTML(num,den){ const q=Math.floor(num/den), r=num%den;
+  if(r===0) return `${q}`; if(q===0) return F(r,den); return M(q,r,den); }
+function simpNote(num,den){ const g=gcd(num,den); if(g>1 && num%den!==0) return ` <small style="color:#888">(약분하면 ${valHTML(num/g,den/g)})</small>`; return ''; }
+function exprHTML(m=S.mode,a=S.a,b=S.b,n=S.n,w=S.w){
+  if(m==='A') return `${F(a,b)} × ${n}`; if(m==='B') return `${n} × ${F(a,b)}`; return `${M(w,a,b)} × ${n}`; }
+function toast(msg){ const t=$('#toast'); t.innerHTML=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ---- SVG 글자/분수 ---- */
+function textW(s,size){ let w=0; for(const ch of String(s)) w += /[가-힣]/.test(ch)?size*.95:(ch===' '?size*.3:size*.58); return w; }
+function fracW(n,d,size){ return Math.max(String(n).length,String(d).length)*size*.5+8; }
+function svgFrac(x,y,n,d,size,col){ const w=fracW(n,d,size);
+  return `<text x="${x+w/2}" y="${y-4}" text-anchor="middle" font-size="${size*.8}" fill="${col}">${n}</text>`+
+         `<line x1="${x+1}" x2="${x+w-1}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.6"/>`+
+         `<text x="${x+w/2}" y="${y+size*.8+1}" text-anchor="middle" font-size="${size*.8}" fill="${col}">${d}</text>`; }
+function partsW(parts,size){ let w=0; parts.forEach(p=>{ if(typeof p!=='object') w+=textW(p,size);
+  else if(p.f) w+=fracW(p.f[0],p.f[1],size)+3; else if(p.m) w+=textW(p.m[0],size)+fracW(p.m[1],p.m[2],size)+3; }); return w; }
+function svgParts(x,y,parts,size=18,col='#2B2B2B',weight=''){ let h='',cx=x;
+  parts.forEach(p=>{
+    if(typeof p!=='object'){ h+=`<text x="${cx}" y="${y+size*.35}" font-size="${size}" fill="${col}" ${weight}>${p}</text>`; cx+=textW(p,size); }
+    else if(p.f){ h+=svgFrac(cx,y,p.f[0],p.f[1],size,col); cx+=fracW(p.f[0],p.f[1],size)+3; }
+    else if(p.m){ h+=`<text x="${cx}" y="${y+size*.35}" font-size="${size}" fill="${col}">${p.m[0]}</text>`; cx+=textW(p.m[0],size);
+                  h+=svgFrac(cx,y,p.m[1],p.m[2],size,col); cx+=fracW(p.m[1],p.m[2],size)+3; }
+  }); return h; }
+function valParts(num,den){ const q=Math.floor(num/den), r=num%den;
+  if(r===0) return [String(q)]; if(q===0) return [{f:[r,den]}]; return [{m:[q,r,den]}]; }
+
+/* =========================================================
+   단계 이동
+   ========================================================= */
+function renderTabs(){
+  $('#lessonTitle').textContent = TITLES[S.mode];
+  $('#stepPills').innerHTML = STEPS.map((t,i)=>`<button class="pill ${i===S.step?'on':i<S.step?'done':''}" data-step="${i}"><b>${i+1}</b><span>${t}</span></button>`).join('');
+}
+// 처음 화면에서 공부할 곱셈을 고르면 1단계부터 시작
+function startLesson(m){
+  S.mode=m; Object.assign(S,DEFAULTS[m]); S.model='bar'; S.K=null; S.bStage=0; S.addShown=0; QZ=null;
+  goStep(0);
+}
+function goStep(s){
+  S.step=s; const home = s<0;
+  $('#home').style.display = home?'block':'none';
+  $('#lessonBar').style.display = home?'none':'flex';
+  $('nav.foot').style.display = home?'none':'flex';
+  document.querySelectorAll('.step').forEach((el,i)=>el.style.display = i===s?'block':'none');
+  $('#prob').style.display = s<=0?'none':'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(home) return;
+  renderTabs();
+  $('#prevStep').textContent = s===0 ? '◀ 처음 화면' : '◀ 이전';
+  $('#nextStep').textContent = s===3 ? (NARROW()?'다른 곱셈 ⌂':'다른 곱셈 공부하기 ⌂') : (NARROW()?'다음 ▶':`다음: ${STEPS[s+1]} ▶`);
+  if(s>0) renderControls();
+  if(s===0){ S.motItems=motSet(); S.mot=0; S.motSolved=new Set(); S.motWrong=[]; S.motLast=-1; renderMot(); }
+  if(s===1) build();
+  if(s===2) renderAdd();
+  if(s===3) renderTimes();
+}
+
+/* =========================================================
+   문제(수) 설정
+   ========================================================= */
+function stepper(k,label){ return `<div class="stp"><span class="lb">${label}</span><button data-k="${k}" data-d="-1">−</button><b>${S[k]}</b><button data-k="${k}" data-d="1">+</button></div>`; }
+function renderControls(){
+  const m=S.mode; let h='';
+  if(m==='A') h = stepper('a','분자')+stepper('b','분모')+stepper('n','곱하는 자연수');
+  if(m==='B') h = stepper('n','자연수')+stepper('a','분자')+stepper('b','분모');
+  if(m==='C') h = stepper('w','대분수의 자연수 부분')+stepper('a','분자')+stepper('b','분모')+stepper('n','곱하는 자연수');
+  $('#nums').innerHTML = h;
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  document.querySelectorAll('#modelSeg button').forEach(b=>b.classList.toggle('on',b.dataset.model===S.model));
+  $('#swapBtn').style.display = m==='C' ? 'none' : '';
+  $('#lessonTitle').textContent = TITLES[m];
+  setExpr(S.step>=2);
+}
+function setExpr(showAns){
+  const T=totalUnits();
+  $('#expr').innerHTML = exprHTML() + ' = ' + (showAns ? `${F(T,S.b)}${T>=S.b?' = '+valHTML(T,S.b):''}` : '<span class="q">?</span>');
+}
+function setVal(k,d){
+  const [lo,hi]=LIMS[k](); const v=S[k]+d;
+  if(v<lo||v>hi){ toast(k==='a'?'진분수는 분자가 분모보다 작아야 해요!':`${lo}부터 ${hi}까지 정할 수 있어요.`); return; }
+  S[k]=v;
+  if(['cm','cp','cq'].includes(k)){ renderCmpCtl(); renderCmp(); return; }
+  if(k==='b' && S.a>S.b-1) S.a=S.b-1;
+  onProblemChange();
+}
+function onProblemChange(){
+  S.K=null; S.bStage=0; S.addShown=0;
+  const [lo,hi]=LIMS.n(); S.n=Math.min(Math.max(S.n,lo),hi);
+  renderControls();
+  if(S.step===1) build(); if(S.step===2) renderAdd(); if(S.step===3) renderTimes();
+}
+
+/* =========================================================
+   2단계 모형으로 해 볼까요? : 끌어서 옮기는 모형
+   ========================================================= */
+function polyPts(R,b){ return Array.from({length:b},(_,k)=>{const t=(-90+k*360/b)*Math.PI/180; return [ +(R*Math.cos(t)).toFixed(2), +(R*Math.sin(t)).toFixed(2) ];}); }
+// 단위분수 조각 하나 (원점 기준)
+function unitShape(fill,stroke='#455A64',sw=1.5){
+  const {model,b}=S, R=G.R;
+  const st=`fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"`;
+  if(model==='bar') return `<rect x="0" y="0" width="${G.pw}" height="${BH}" ${st}/>`;
+  if(model==='circle'){
+    if(b===1) return `<circle r="${R}" ${st}/>`;
+    const t0=-Math.PI/2, t1=t0+2*Math.PI/b;
+    return `<path d="M0 0 L${(R*Math.cos(t0)).toFixed(2)} ${(R*Math.sin(t0)).toFixed(2)} A${R} ${R} 0 0 1 ${(R*Math.cos(t1)).toFixed(2)} ${(R*Math.sin(t1)).toFixed(2)} Z" ${st}/>`;
+  }
+  if(b===2){ const s=R*1.6; return `<rect x="${-s/2}" y="${-s/2}" width="${s/2}" height="${s}" ${st}/>`; }
+  const p=polyPts(R,b); return `<path d="M0 0 L${p[0]} L${p[1]} Z" ${st}/>`;
+}
+function wholeBorder(stroke,sw){
+  const {model,b}=S, R=G.R, st=`fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"`;
+  if(model==='bar') return `<rect x="0" y="0" width="${G.unitW}" height="${BH}" ${st}/>`;
+  if(model==='circle') return `<circle r="${R}" ${st}/>`;
+  if(b===2){ const s=R*1.6; return `<rect x="${-s/2}" y="${-s/2}" width="${s}" height="${s}" ${st}/>`; }
+  return `<polygon points="${polyPts(R,b).join(' ')}" ${st}/>`;
+}
+function slotLocal(k){ return S.model==='bar' ? `translate(${k*G.pw},0)` : `rotate(${k*360/S.b})`; }
+// 전체 1 (b칸) 그리기
+function unitOutline(fillFn,lineCol='#90A4AE',borderCol='#455A64'){
+  let h=''; for(let k=0;k<S.b;k++) h+=`<g transform="${slotLocal(k)}">${unitShape(fillFn(k),lineCol,1.2)}</g>`;
+  return h + wholeBorder(borderCol,2.6);
+}
+function relU(u){ return S.model==='bar' ? {x:u*G.unitW,y:0}
+  : {x:G.R+(u%G.perCopy)*G.cellW, y:G.R+Math.floor(u/G.perCopy)*G.rowH}; }
+function slotAbs(c,u,k){ const r=relU(u);
+  return S.model==='bar' ? {x:c.x+r.x+k*G.pw, y:c.y+r.y, r:0} : {x:c.x+r.x, y:c.y+r.y, r:k*360/S.b}; }
+function wholeAbs(c,u){ const r=relU(u); return {x:c.x+r.x, y:c.y+r.y, r:0}; }
+function framePos(fr,k,type){ if(S.model==='bar') return {x:fr.x+(type==='whole'?0:k*G.pw), y:fr.y, r:0};
+  return {x:fr.x, y:fr.y, r:type==='whole'?0:k*360/S.b}; }
+function place(it){ it.el.style.transform=`translate(${it.x}px,${it.y}px) rotate(${it.r}deg)`; }
+function placeCopy(c){ c.el.style.transform=`translate(${c.x}px,${c.y}px)`; }
+function setPos(it,p){ it.x=p.x; it.y=p.y; it.r=p.r; place(it); }
+function copyFill(u,k){
+  if(S.mode==='B' && S.bStage>=1){ const g=Math.floor((u*S.b+k)/S.n); return GPAL[g%GPAL.length]+'38'; }
+  return '#FFFFFF';
+}
+function modelWord(){ return {bar:'막대',circle:'원',poly:'도형'}[S.model]; }
+
+function build(){
+  const {mode,model,a,b,n,w}=S;
+  const T=totalUnits(), Kdef=Math.max(1,Math.ceil(T/b));
+  if(S.K==null) S.K=Kdef;
+  items=[]; copies=[]; frames=[];
+  const svg=$('#ws'), Lf=$('#Lf'), Lc=$('#Lc'), Lp=$('#Lp');
+  svg.classList.add('noanim');
+  Lf.innerHTML=''; Lc.innerHTML=''; Lp.innerHTML='';
+  // --- 크기 정하기
+  if(model==='bar'){
+    const need=Math.max(mode==='B'?n:(mode==='C'?w+1:1), Math.min(Kdef,NARROW()?3:5), 1);
+    G.unitW=Math.min(200,Math.floor((VW-100)/need)); G.pw=G.unitW/b; G.cellW=G.unitW; G.perCopy=99;
+  } else {
+    G.R=NARROW()?34:46; G.cellW=2*G.R+(NARROW()?12:18); G.rowH=2*G.R+22; G.perCopy=Math.max(1,Math.floor((VW-90)/G.cellW));
+  }
+  // --- 곱해지는 수(복사본) 배치
+  const defs = mode==='B' ? [{units:n}] : Array.from({length:n},()=>({units:mode==='C'?w+1:1}));
+  const startX=20+HANDLE+10, gapY = model==='bar' ? (mode==='B'?90:28) : 22;
+  let cx=startX, cy=(mode==='B'&&model==='bar')?86:56, rowBottom=cy;
+  defs.forEach((d,i)=>{
+    const cols=Math.min(d.units,G.perCopy), rows=Math.ceil(d.units/G.perCopy);
+    const wd=cols*G.cellW, ht = model==='bar' ? BH : (rows-1)*G.rowH+2*G.R;
+    if(cx+wd>VW-12 && cx>startX){ cx=startX; cy=rowBottom+gapY; }
+    copies.push({id:i,units:d.units,x:cx,y:cy,hx:cx,hy:cy});
+    rowBottom=Math.max(rowBottom,cy+ht);
+    cx+=wd+HANDLE+34;
+  });
+  frameTop = rowBottom + (mode==='B'&&model==='bar'?34:0) + 86;
+
+  // 위쪽 안내 글자
+  const top = mode==='A' ? [{f:[a,b]},` ${modelWord()} ${n}개`] :
+              mode==='B' ? [`${n}  (전체 1이 ${n}개)`] : [{m:[w,a,b]},` ${modelWord()} ${n}개`];
+  Lc.insertAdjacentHTML('beforeend', svgParts(20,24,top,19,'#5D4037'));
+
+  copies.forEach(c=>{
+    const g=document.createElementNS(NS,'g'); g.setAttribute('class','copy'); g.dataset.copy=c.id;
+    const col = mode==='B' ? '#78909C' : PAL[c.id%PAL.length];
+    const y0 = model==='bar'?0:G.R-24, hh = model==='bar'?BH:48;
+    let h=`<g class="handle"><rect x="${-HANDLE-8}" y="${y0}" width="${HANDLE}" height="${hh}" rx="10" fill="${col}"/>`+
+          `<text x="${-HANDLE/2-8}" y="${y0+hh/2+7}" text-anchor="middle" fill="#fff" font-size="19" style="font-family:Jua">${mode==='B'?'⠿':c.id+1}</text></g>`;
+    for(let u=0;u<c.units;u++){ const r=relU(u); h+=`<g transform="translate(${r.x},${r.y})">${unitOutline(k=>copyFill(u,k),'#B0BEC5','#607D8B')}</g>`; }
+    if(mode==='B' && model==='bar'){
+      for(let u=0;u<=n;u++) h+=`<text x="${u*G.unitW}" y="${BH+24}" text-anchor="middle" font-size="16" fill="#455A64">${u}</text>`;
+      if(S.bStage>=1) for(let gi=0;gi<b;gi++){
+        const x0=gi*n*G.pw, x1=(gi+1)*n*G.pw, col2=GPAL[gi%GPAL.length];
+        h+=`<path d="M${x0+2} -6 V-18 H${x1-2} V-6" fill="none" stroke="${col2}" stroke-width="2.6"/>`;
+        h+=`<text x="${(x0+x1)/2}" y="-25" text-anchor="middle" font-size="14" fill="${col2}">${x1-x0>54?(gi+1)+'묶음':gi+1}</text>`;
+      }
+    }
+    g.innerHTML=h; c.el=g; Lc.appendChild(g); placeCopy(c);
+    const pc = PAL[c.id%PAL.length];
+    if(mode==='A') for(let k=0;k<a;k++) makePiece('unit',pc,slotAbs(c,0,k),c.id);
+    if(mode==='C'){ for(let u=0;u<w;u++) makePiece('whole',pc,wholeAbs(c,u),c.id);
+                    for(let k=0;k<a;k++) makePiece('unit',pc,slotAbs(c,w,k),c.id); }
+    if(mode==='B') for(let i=0;i<n*b;i++){ const gi=Math.floor(i/n); if(gi<a){
+        const u=Math.floor(i/b), k=i%b; makePiece('unit',GPAL[gi%GPAL.length],slotAbs(c,u,k),c.id,{grp:gi}); } }
+  });
+  if(mode==='B' && S.bStage<2) items.forEach(it=>it.el.classList.add('hide'));
+  layoutFrames();
+  // B 단계 버튼
+  $('#bStageRow').style.display = mode==='B' ? 'flex' : 'none';
+  $('#bS1').textContent = `① ${n}${j(n,'을','를')} 똑같이 ${b}묶음으로 나누기`;
+  $('#bS2').textContent = `② 그중 ${a}묶음 고르기`;
+  $('#bS1').disabled = S.bStage>=1; $('#bS2').disabled = S.bStage!==1;
+  updateGuide(); updateResult();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>svg.classList.remove('noanim')));
+}
+function makePiece(type,color,pos,copyId,extra={}){
+  const it=Object.assign({id:items.length,type,color,x:pos.x,y:pos.y,r:pos.r,copy:copyId,slot:null,home:{...pos}},extra);
+  const g=document.createElementNS(NS,'g'); g.setAttribute('class','piece'); g.dataset.id=it.id;
+  g.innerHTML = type==='unit' ? unitShape(color,'#37474F',1.6) : unitOutline(()=>color,'#37474F','#263238');
+  it.el=g; $('#Lp').appendChild(g); place(it); items.push(it); return it;
+}
+function layoutFrames(){
+  const {model,b}=S, K=S.K, old=frames; frames=[];
+  if(model==='bar'){ const per=Math.max(1,Math.floor((VW-90)/G.unitW));
+    for(let f=0;f<K;f++) frames.push({x:50+(f%per)*G.unitW, y:frameTop+Math.floor(f/per)*(BH+60),
+      slots: old[f]?old[f].slots:Array(b).fill(null), endRow:(f%per===per-1)||f===K-1});
+  } else { const per=Math.max(1,Math.floor((VW-60)/G.cellW));
+    for(let f=0;f<K;f++) frames.push({x:40+G.R+(f%per)*G.cellW, y:frameTop+G.R+Math.floor(f/per)*(2*G.R+46),
+      slots: old[f]?old[f].slots:Array(b).fill(null)});
+  }
+  // 없어진 칸에 있던 조각은 제자리로
+  items.forEach(it=>{ if(it.slot && it.slot.f>=K){ it.slot=null; setPos(it,it.home); } });
+  const last=frames[K-1], H = model==='bar' ? last.y+BH+46 : last.y+G.R+44;
+  let h=`<rect x="8" y="${frameTop-62}" width="${VW-16}" height="${H-frameTop+54}" rx="18" fill="#FFF3E0" stroke="#FFCC80" stroke-dasharray="8 6"/>`;
+  h+=`<text x="26" y="${frameTop-32}" font-size="${NARROW()?17:19}" fill="#E65100" style="font-family:Jua">모으는 곳 · 전체 1이 ${K}개</text>`;
+  frames.forEach((fr,f)=>{
+    h+=`<g transform="translate(${fr.x},${fr.y})">${unitOutline(()=>'#FFFFFF','#CFD8DC','#8D6E63')}</g>`;
+    if(model==='bar'){
+      h+=`<text x="${fr.x}" y="${fr.y+BH+24}" text-anchor="middle" font-size="16" fill="#6D4C41">${f}</text>`;
+      if(fr.endRow) h+=`<text x="${fr.x+G.unitW}" y="${fr.y+BH+24}" text-anchor="middle" font-size="16" fill="#6D4C41">${f+1}</text>`;
+    } else h+=`<text x="${fr.x}" y="${fr.y+G.R+22}" text-anchor="middle" font-size="15" fill="#6D4C41">1</text>`;
+  });
+  $('#Lf').innerHTML=h;
+  $('#ws').setAttribute('viewBox',`0 0 ${VW} ${H+12}`);
+  frames.forEach((fr,f)=>{ const seen=new Set(); fr.slots.forEach((id,k)=>{ if(id!=null && !seen.has(id)){ seen.add(id);
+    const it=items[id]; setPos(it,framePos(fr,it.slot.ks[0],it.type)); } }); });
+  $('#kVal').textContent=K;
+}
+function freeIt(it){ if(!it.slot) return; it.slot.ks.forEach(k=>frames[it.slot.f].slots[k]=null); it.slot=null; }
+function assign(it,fi,ks){ it.slot={f:fi,ks}; ks.forEach(k=>frames[fi].slots[k]=it.id); setPos(it,framePos(frames[fi],ks[0],it.type)); }
+function findSpot(it,prefer){
+  const all=[...Array(S.b).keys()];
+  if(it.type==='whole'){
+    const ok=fr=>fr.slots.every(s=>s==null);
+    if(prefer!=null && ok(frames[prefer])) return {fi:prefer,ks:all};
+    const fi=frames.findIndex(ok); return fi<0?null:{fi,ks:all};
+  }
+  if(prefer!=null){ const k=frames[prefer].slots.indexOf(null); if(k>=0) return {fi:prefer,ks:[k]}; }
+  const fi=frames.findIndex(fr=>fr.slots.includes(null)); return fi<0?null:{fi,ks:[frames[fi].slots.indexOf(null)]};
+}
+function findSpotGrow(it,prefer){
+  let sp=findSpot(it,prefer), guard=0;
+  while(!sp && S.K<40 && guard++<10){ S.K++; layoutFrames(); sp=findSpot(it,prefer); }
+  return sp;
+}
+function hitFrame(p){
+  for(let f=0;f<frames.length;f++){ const fr=frames[f];
+    if(S.model==='bar'){ if(p.x>=fr.x-6 && p.x<=fr.x+G.unitW+6 && p.y>=fr.y-34 && p.y<=fr.y+BH+34) return f; }
+    else if(Math.hypot(p.x-fr.x,p.y-fr.y)<G.R+22) return f;
+  } return -1;
+}
+function stagger(it,d){ it.el.style.transitionDelay=d+'ms'; setTimeout(()=>it.el.style.transitionDelay='',d+700); }
+
+/* --- 끌기(드래그) --- */
+function svgPt(e){ const svg=$('#ws'), p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function initDrag(){
+  const svg=$('#ws');
+  // 터치: 조각/모형을 잡았을 때만 화면 스크롤을 막음 (빈 곳을 문지르면 스크롤 가능)
+  svg.addEventListener('touchstart',e=>{ if(e.target.closest('.piece,.copy')) e.preventDefault(); },{passive:false});
+  svg.addEventListener('pointerdown',e=>{
+    if(drag) return;                       // 다른 손가락이 이미 끌고 있으면 무시
+    if(e.pointerType==='mouse' && e.button!==0) return;
+    const pe=e.target.closest('.piece'), ce=e.target.closest('.copy'), p=svgPt(e);
+    if(pe){
+      const it=items[+pe.dataset.id]; freeIt(it); it.copy=null;
+      drag={type:'piece',it,dx:p.x-it.x,dy:p.y-it.y};
+      it.el.classList.add('dragging'); $('#Lp').appendChild(it.el);
+    } else if(ce){
+      const c=copies[+ce.dataset.copy];
+      const mem=items.filter(it=>it.copy===c.id && !it.el.classList.contains('hide'));
+      drag={type:'copy',c,sx:p.x,sy:p.y,ox:c.x,oy:c.y,mem:mem.map(it=>({it,x:it.x,y:it.y}))};
+      c.el.classList.add('dragging'); $('#Lc').appendChild(c.el);
+      mem.forEach(it=>{it.el.classList.add('dragging'); $('#Lp').appendChild(it.el);});
+    } else return;
+    drag.pid=e.pointerId;
+    try{ svg.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!drag || e.pointerId!==drag.pid) return; const p=svgPt(e);
+    if(drag.type==='piece'){ drag.it.x=p.x-drag.dx; drag.it.y=p.y-drag.dy; place(drag.it); }
+    else { const dx=p.x-drag.sx, dy=p.y-drag.sy; drag.c.x=drag.ox+dx; drag.c.y=drag.oy+dy; placeCopy(drag.c);
+      drag.mem.forEach(m=>{m.it.x=m.x+dx; m.it.y=m.y+dy; place(m.it);}); }
+  });
+  const end=e=>{
+    if(!drag || e.pointerId!==drag.pid) return; const p=svgPt(e), d=drag; drag=null;
+    if(d.type==='piece'){ d.it.el.classList.remove('dragging');
+      const f=hitFrame(p); if(f>=0){ const sp=findSpot(d.it,f); if(sp) assign(d.it,sp.fi,sp.ks); else toast('모으는 곳이 가득 찼어요. 위의 [+]로 전체 1을 더 늘려 보세요.'); }
+    } else {
+      d.c.el.classList.remove('dragging'); d.mem.forEach(m=>m.it.el.classList.remove('dragging'));
+      if(p.y>frameTop-60) dropCopy(d.c);
+    }
+    updateResult();
+  };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+}
+// 모형을 통째로 모으는 곳에 놓으면 조각이 차례로 채워짐
+function dropCopy(c){
+  const mem=items.filter(it=>it.copy===c.id && !it.el.classList.contains('hide'))
+                 .sort((x,y)=>(x.type==='whole'?0:1)-(y.type==='whole'?0:1)||x.id-y.id);
+  let dl=0;
+  mem.forEach(it=>{ const sp=findSpotGrow(it); if(sp){ it.copy=null; stagger(it,dl); assign(it,sp.fi,sp.ks); dl+=55; } });
+  const dx=c.hx-c.x, dy=c.hy-c.y; c.x=c.hx; c.y=c.hy; placeCopy(c);
+  items.filter(it=>it.copy===c.id).forEach(it=>{it.x+=dx; it.y+=dy; place(it);});
+}
+function gatherAll(){
+  if(S.mode==='B' && S.bStage<2){ S.bStage=2; build(); setTimeout(gatherAll,120); return; }
+  frames.forEach(fr=>fr.slots.fill(null)); items.forEach(it=>it.slot=null);
+  const Kdef=Math.ceil(totalUnits()/S.b); if(S.K<Kdef){ S.K=Kdef; layoutFrames(); }
+  let dl=0;
+  [...items].sort((x,y)=>(x.type==='whole'?0:1)-(y.type==='whole'?0:1)||x.id-y.id)
+    .forEach(it=>{ const sp=findSpotGrow(it); if(sp){ it.copy=null; stagger(it,dl); assign(it,sp.fi,sp.ks); dl+=40; } });
+  updateResult();
+}
+function updateGuide(){
+  const {mode,a,b,n,w}=S, mw=modelWord(); let h='';
+  if(mode==='A') h=`${F(a,b)} ${mw}${mw==='막대'?'가':'이'} ${n}개 있어요. 색칠된 조각을 아래 <b>모으는 곳</b>으로 끌어다 놓아 ${F(a,b)}${j(a,'을','를')} ${n}번 더해 보세요.<br>조각 하나씩 옮길 수도 있고, 왼쪽 <b>번호 손잡이</b>를 잡고 끌면 ${mw}${mw==='막대'?'를':'을'} 통째로 옮길 수 있어요.`;
+  if(mode==='C') h=`${M(w,a,b)}${j(a,'이','가')} ${n}개 있어요. 꽉 찬 1(자연수 부분)과 ${F(1,b)} 조각을 <b>모으는 곳</b>으로 옮겨 모두 얼마인지 알아보세요.<br>번호 손잡이를 잡고 통째로 끌어 놓으면 조각이 차례로 채워져요.`;
+  if(mode==='B'){
+    if(S.bStage===0) h=`${n} × ${F(a,b)}${j(a,'은','는')} <b>${n}의 ${F(a,b)}</b>이라는 뜻이에요. 먼저 ${n}${j(n,'을','를')} 똑같이 ${b}묶음으로 나누어 볼까요? (① 버튼)`;
+    if(S.bStage===1) h=`${n}${j(n,'을','를')} ${b}묶음으로 나누었어요. 같은 색이 한 묶음이에요. 한 묶음은 ${F(1,b)}${j(1,'이','가')} ${n}개 → ${F(n,b)}예요. 이제 ${a}묶음을 골라 볼까요? (② 버튼)`;
+    if(S.bStage===2) h=`${a}묶음을 골랐어요! 고른 조각을 아래 <b>모으는 곳</b>으로 옮겨 모두 얼마인지 알아보세요. (${modelWord()} 전체를 끌어 옮길 수도 있어요)`;
+  }
+  $('#guide').innerHTML=h;
+}
+function updateResult(){
+  const {b}=S, T=totalUnits(); let inF=0, full=0;
+  frames.forEach(fr=>{ const c=fr.slots.filter(s=>s!=null).length; inF+=c; if(c===b) full++; });
+  const out=items.filter(it=>!it.slot && !it.el.classList.contains('hide')).length;
+  const r=$('#result'); r.classList.remove('ok');
+  if(S.mode==='B' && S.bStage<2){ r.innerHTML='버튼을 차례로 눌러 묶음을 만들어 보세요.'; setExpr(false); return; }
+  if(inF===0){ r.innerHTML=`아직 모은 조각이 없어요. (옮길 조각 ${out}개)`; setExpr(false); return; }
+  let h=`모은 양: ${F(1,b)}${j(1,'이','가')} <b>${inF}개</b> → ${F(inF,b)}${inF>=b?' = '+valHTML(inF,b):''} · 꽉 찬 1: <b>${full}개</b>`;
+  if(out>0){ h+=` · 남은 조각 ${out}개`; r.innerHTML=h; setExpr(false); return; }
+  if(inF===T){
+    r.classList.add('ok');
+    const extra = S.mode==='B' ? ` (${S.n}의 ${F(S.a,b)})` : '';
+    h=`다 모았어요! ${exprHTML()}${extra} = ${F(1,b)}${j(1,'이','가')} ${T}개 = ${F(T,b)}${T>=b?' = '+valHTML(T,b):''}${simpNote(T,b)}`;
+    const gap = frames.some((fr,f)=>fr.slots.includes(null) && frames.slice(f+1).some(x=>x.slots.some(s=>s!=null)));
+    if(gap) h+=`<br><small>빈칸을 앞에서부터 채우면 꽉 찬 1이 몇 개인지 더 쉽게 보여요.</small>`;
+    setExpr(true);
+  }
+  r.innerHTML=h;
+}
+
+/* =========================================================
+   3단계 덧셈으로 알아볼까요?
+   ========================================================= */
+function renderAdd(){
+  setExpr(true);
+  const {mode,a,b,n,w}=S, T=totalUnits(); let h='';
+  const fin = `${F(T,b)}${T>=b?' = '+valHTML(T,b):''}${simpNote(T,b)}`;
+  if(mode==='A'){
+    h+=`<p>${F(a,b)} × ${n} = ${Array(n).fill(F(a,b)).join(' + ')}</p>`;
+    h+=`<p>= ${F(Array(n).fill(a).join(' + '),b)}</p>`;
+    h+=`<p>= ${F(`${a} × ${n}`,b)} = ${fin}</p>`;
+    h+=`<p class="small">분모는 그대로 두고, 분자끼리 더해요. → <b>분자에 자연수를 곱하면</b> 돼요.</p>`;
+  }
+  if(mode==='B'){
+    h+=`<p>${n} × ${F(a,b)} = ${F(a,b)} × ${n} = ${Array(n).fill(F(a,b)).join(' + ')}</p>`;
+    h+=`<p>= ${F(`${n} × ${a}`,b)} = ${fin}</p>`;
+    h+=`<p class="small"><span class="tag">다른 생각</span>${n}의 ${F(1,b)}${j(1,'은','는')} ${F(n,b)} → ${n}의 ${F(a,b)}${j(a,'은','는')} ${F(n,b)}${j(n,'이','가')} ${a}개 → ${Array(a).fill(F(n,b)).join(' + ')} = ${F(n*a,b)}</p>`;
+    h+=`<p class="small">곱하는 순서를 바꾸어도 결과는 같아요.</p>`;
+  }
+  if(mode==='C'){
+    const im=w*b+a;
+    h+=`<p>${M(w,a,b)} × ${n} = ${Array(n).fill(M(w,a,b)).join(' + ')}</p>`;
+    h+=`<p><span class="tag">방법 1</span>자연수끼리, 분수끼리 더하기</p>`;
+    h+=`<p>= (${Array(n).fill(w).join(' + ')}) + (${Array(n).fill(F(a,b)).join(' + ')}) = ${w*n} + ${F(a*n,b)} = ${valHTML(T,b)}</p>`;
+    h+=`<p><span class="tag">방법 2</span>대분수를 가분수로 바꾸어 곱하기</p>`;
+    h+=`<p>${M(w,a,b)} × ${n} = ${F(im,b)} × ${n} = ${F(`${im} × ${n}`,b)} = ${fin}</p>`;
+  }
+  $('#addEq').innerHTML=h;
+  drawNL();
+}
+function addRows(){
+  const {mode,a,b,n,w}=S;
+  if(mode==='A') return [{step:a,count:n,lbl:[{f:[a,b]}],title:[{f:[a,b]},`씩 ${n}번 뛰어 세기`]}];
+  if(mode==='B') return [{step:a,count:n,lbl:[{f:[a,b]}],title:[{f:[a,b]},`씩 ${n}번 뛰어 세기`]},
+                         {step:n,count:a,lbl:[{f:[n,b]}],title:[`${n}의 `,{f:[1,b]},' = ',{f:[n,b]},`씩 ${a}번 뛰어 세기`]}];
+  return [{step:w*b+a,count:n,lbl:[{m:[w,a,b]}],title:[{m:[w,a,b]},`씩 ${n}번 뛰어 세기`]}];
+}
+function drawNL(){
+  const {b}=S, T=totalUnits(), rows=addRows();
+  const nar=NARROW(), maxU=Math.max(b,Math.ceil(T/b)*b), x0=nar?22:50, x1=VW-(nar?36:60), sc=(x1-x0)/maxU, X=u=>x0+u*sc;
+  const ls=nar?12:14; let h=''; const rh=170;
+  rows.forEach((r,ri)=>{
+    const y=140+ri*rh;
+    h+=svgParts(x0,y-112,r.title,nar?15:18,'#5D4037');
+    h+=`<line x1="${x0}" y1="${y}" x2="${x1+18}" y2="${y}" stroke="#37474F" stroke-width="2.5"/><path d="M${x1+18} ${y-6} L${x1+28} ${y} L${x1+18} ${y+6} Z" fill="#37474F"/>`;
+    for(let u=0;u<=maxU;u++){ const big=u%b===0; if(!big && sc<6) continue;
+      h+=`<line x1="${X(u)}" y1="${y-(big?11:6)}" x2="${X(u)}" y2="${y+(big?11:6)}" stroke="#37474F" stroke-width="${big?2.4:1.2}"/>`;
+      if(big) h+=`<text x="${X(u)}" y="${y+34}" text-anchor="middle" font-size="${nar?15:18}" fill="#37474F">${u/b}</text>`; }
+    const shown=Math.min(S.addShown,r.count);
+    for(let k=0;k<shown;k++){
+      const s=X(k*r.step), e=X((k+1)*r.step), hg=Math.min(66,(e-s)*.42+14), col=GPAL[k%GPAL.length];
+      h+=`<g class="pop"><path d="M${s} ${y} Q${(s+e)/2} ${y-2*hg} ${e} ${y}" fill="none" stroke="${col}" stroke-width="3"/>`;
+      h+=`<circle cx="${e}" cy="${y}" r="5" fill="${col}"/>`;
+      const lw=partsW(['+',...r.lbl],ls), lift=(e-s<lw+2 && k%2)?20:0; h+=svgParts((s+e)/2-lw/2,y-hg-14-lift,['+',...r.lbl],ls,col)+'</g>';
+    }
+    if(shown===r.count){ const vp=valParts(T,b), lw=partsW(vp,20), xe=Math.min(Math.max(X(r.step*r.count),lw/2+12),VW-lw/2-12);
+      h+=`<g class="pop"><rect x="${xe-lw/2-8}" y="${y+46}" width="${lw+16}" height="40" rx="10" fill="#E8F5E9" stroke="#66BB6A"/>${svgParts(xe-lw/2,y+66,vp,20,'#2E7D32')}</g>`; }
+  });
+  const svg=$('#nl'); svg.setAttribute('viewBox',`0 0 ${VW} ${140+(rows.length-1)*rh+100}`); svg.innerHTML=h;
+  const mx=Math.max(...rows.map(r=>r.count)); $('#addNext').disabled = S.addShown>=mx;
+}
+
+/* =========================================================
+   4단계 몇 배일까요?
+   ========================================================= */
+function drawBars(svgEl,rows,den){
+  const tot=rows.map(r=>r.segs.reduce((s,x)=>s+x.len,0));
+  const nar=NARROW(), fs=nar?14:18, x0=nar?Math.min(120,Math.max(...rows.map(r=>partsW(r.label,14)))+18):230, W=VW-x0-(nar?62:120);
+  const maxU=Math.max(den,Math.ceil(Math.max(...tot)/den)*den), sc=W/maxU, rh=nar?58:66, top=34, bh=nar?38:44;
+  let h='';
+  const yb=top+rows.length*rh-14;
+  for(let u=0;u<=maxU;u+=den){ h+=`<line x1="${x0+u*sc}" y1="${top-10}" x2="${x0+u*sc}" y2="${yb}" stroke="#D7CCB4" stroke-dasharray="4 4"/>`+
+    `<text x="${x0+u*sc}" y="${top-14}" text-anchor="middle" font-size="15" fill="#8D6E63">${u/den}</text>`; }
+  rows.forEach((r,i)=>{ const y=top+i*rh;
+    h+=svgParts(nar?4:14,y+bh/2,r.label,fs,'#3E2723');
+    let cur=0; r.segs.forEach(s=>{ h+=`<rect class="pop" x="${x0+cur*sc}" y="${y}" width="${s.len*sc}" height="${bh}" fill="${s.color}" stroke="#37474F" stroke-width="1.6"/>`;
+      if(sc>=7) for(let u=1;u<s.len;u++) h+=`<line x1="${x0+(cur+u)*sc}" y1="${y}" x2="${x0+(cur+u)*sc}" y2="${y+bh}" stroke="#37474F" stroke-opacity=".25"/>`;
+      cur+=s.len; });
+    h+=svgParts(x0+cur*sc+(nar?6:10),y+bh/2,['= ',...valParts(cur,den)],fs,'#2E7D32');
+  });
+  svgEl.setAttribute('viewBox',`0 0 ${VW} ${yb+16}`); svgEl.innerHTML=h;
+}
+function renderTimes(){
+  setExpr(true);
+  const {mode,a,b,n,w}=S, T=totalUnits(), fin=`${F(T,b)}${T>=b?' = '+valHTML(T,b):''}`;
+  let h='', rows=[], note='';
+  if(mode==='A'){
+    h=`<p>${F(a,b)} × ${n}${j(n,'은','는')} <b>${F(a,b)}의 ${n}배</b>예요.</p><p>${F(a,b)}${j(a,'을','를')} ${n}번 이어 붙이면 → ${fin}</p>`;
+    rows=[{label:['1 (전체)'],segs:[{len:b,color:'#ECEFF1'}]},{label:[{f:[a,b]}],segs:[{len:a,color:PAL[0]}]},
+          {label:[{f:[a,b]},`의 ${n}배`],segs:Array.from({length:n},(_,i)=>({len:a,color:PAL[i%PAL.length]}))}];
+    note = n>1 ? `${F(a,b)}에 1보다 큰 수 ${n}${j(n,'을','를')} 곱했더니 결과가 ${F(a,b)}보다 커졌어요.` : `1을 곱하면 처음 수와 같아요.`;
+  }
+  if(mode==='B'){
+    h=`<p>${n} × ${F(a,b)}${j(a,'은','는')} <b>${n}의 ${F(a,b)}배</b>예요.</p><p>${n}${j(n,'을','를')} 똑같이 ${b}묶음으로 나눈 것 중의 ${a}묶음 → ${fin}</p>`;
+    rows=[{label:[`${n}`],segs:Array.from({length:b},(_,g)=>({len:n,color:GPAL[g%GPAL.length]+'40'}))},
+          {label:[`${n}의 `,{f:[a,b]},'배'],segs:Array.from({length:a},(_,g)=>({len:n,color:GPAL[g%GPAL.length]}))}];
+    note=`곱하는 수 ${F(a,b)}${j(a,'은','는')} 1보다 작아요. 그래서 결과 ${valHTML(T,b)}${j(T%b?T%b:Math.floor(T/b),'은','는')} 처음 수 ${n}보다 <b>작아졌어요!</b>`;
+  }
+  if(mode==='C'){
+    const im=w*b+a;
+    h=`<p>${M(w,a,b)} × ${n}${j(n,'은','는')} <b>${M(w,a,b)}의 ${n}배</b>예요.</p><p>${M(w,a,b)}${j(a,'을','를')} ${n}번 이어 붙이면 → ${fin}</p>`;
+    rows=[{label:['1 (전체)'],segs:[{len:b,color:'#ECEFF1'}]},{label:[{m:[w,a,b]}],segs:[{len:im,color:PAL[0]}]},
+          {label:[{m:[w,a,b]},`의 ${n}배`],segs:Array.from({length:n},(_,i)=>({len:im,color:PAL[i%PAL.length]}))}];
+    note=`자연수 부분 ${w}의 ${n}배 = ${w*n}, 분수 부분 ${F(a,b)}의 ${n}배 = ${F(a*n,b)} → 합치면 ${valHTML(T,b)}`;
+  }
+  $('#timesTxt').innerHTML=h; $('#timesNote').innerHTML=note;
+  drawBars($('#timesSvg'),rows,b);
+  renderCmpCtl(); renderCmp();
+  if(!QZ || QZ.m!==S.mode) newQuiz(); else renderQuiz();
+}
+function renderCmpCtl(){ $('#cmpCtl').innerHTML = stepper('cm','처음 수')+'<span style="font-family:Jua;font-size:24px">×</span>'+stepper('cp','곱하는 수의 분자')+stepper('cq','분모'); }
+function renderCmp(){
+  const {cm,cp,cq}=S;
+  const rows=[{label:[`${cm}`],segs:[{len:cm*cq,color:'#B0BEC5'}]},
+              {label:[`${cm} × `,cq===1?`${cp}`:{f:[cp,cq]}],segs:[{len:cm*cp,color:cp>cq?'#29B6F6':cp<cq?'#FF7043':'#8BC34A'}]}];
+  drawBars($('#cmpSvg'),rows,cq);
+  const mul = cq===1?`${cp}`:F(cp,cq);
+  $('#cmpMsg').innerHTML = cp>cq ? `곱하는 수 ${mul}${j(cp,'은','는')} 1보다 커요 → 결과가 ${cm}보다 <b style="color:#0277BD">커졌어요</b>.`
+    : cp===cq ? `곱하는 수 ${mul}${j(cp,'은','는')} 1과 같아요 → 결과가 ${cm}와(과) <b style="color:#2E7D32">같아요</b>.`
+    : `곱하는 수 ${mul}${j(cp,'은','는')} 1보다 작아요 → 결과가 ${cm}보다 <b style="color:#D84315">작아졌어요</b>. 곱셈을 한다고 항상 커지는 것은 아니에요!`;
+}
+/* 스스로 확인하기 */
+let QZ=null;
+function newQuiz(){ const m=S.mode, b=ri(2,9); QZ={m,b,a:ri(1,b-1),n:ri(2,m==='C'?4:6),w:ri(1,2)}; renderQuiz(); }
+const quizT = q => q.m==='C' ? (q.w*q.b+q.a)*q.n : q.a*q.n;
+function renderQuiz(){
+  $('#qz').innerHTML = `<div class="row" style="font-size:28px;font-family:Jua"><span>${exprHTML(QZ.m,QZ.a,QZ.b,QZ.n,QZ.w)} =</span>
+    <input id="qW" class="qin w" inputmode="numeric" placeholder="자연수">
+    <span class="frIn"><input id="qN" class="qin" inputmode="numeric" placeholder="분자"><i></i><input id="qD" class="qin" inputmode="numeric" placeholder="분모"></span>
+    <button id="qCheck" class="btn main">확인</button><button id="qNew" class="btn ghost">새 문제</button></div>
+    <p id="qMsg" class="note" style="margin-bottom:0">대분수로 답하려면 자연수 칸도 쓰고, 가분수로 답하려면 자연수 칸은 비워 두세요.</p>`;
+}
+function checkQuiz(){
+  const W=parseInt($('#qW').value)||0, N=parseInt($('#qN').value)||0, D=parseInt($('#qD').value);
+  const T=quizT(QZ), msg=$('#qMsg');
+  if(!D){ msg.innerHTML='분모를 써 주세요.'; return; }
+  if((W*D+N)*QZ.b===T*D) msg.innerHTML=`<b style="color:#2E7D32">정답이에요!</b> ${exprHTML(QZ.m,QZ.a,QZ.b,QZ.n,QZ.w)} = ${F(T,QZ.b)}${T>=QZ.b?' = '+valHTML(T,QZ.b):''}`;
+  else msg.innerHTML = '<b style="color:#D84315">다시 생각해 보세요.</b> ' + (QZ.m==='C'
+     ? '대분수를 가분수로 바꾸거나, 자연수 부분과 분수 부분을 따로 곱해 보세요.'
+     : '분모는 그대로 두고, 분자와 자연수를 곱해 보세요.');
+}
+
+/* =========================================================
+   1단계 생각해 볼까요? (끌기 도우미)
+   ========================================================= */
+function blocks(x,y,n,col,U=50,cls=''){ let s=''; for(let k=0;k<n;k++) s+=`<rect class="${cls}" x="${x+k*U}" y="${y}" width="${U}" height="44" rx="5" fill="${col}" stroke="#37474F" stroke-width="1.6"/>`; return s; }
+function T(x,y,s,size=22,col='#37474F',anchor='start'){ return `<text x="${x}" y="${y}" font-size="${size}" fill="${col}" text-anchor="${anchor}" style="font-family:Jua">${s}</text>`; }
+function legacyViz(i,shown){
+  // 화면 폭(VW)에 맞춰 크기 계산
+  const nar=NARROW(), H=250, L=nar?66:110, fs=nar?18:22;
+  const U=Math.min(50,Math.floor((VW-L-(nar?52:150))/8));      // 작은 블록 (8칸이 한 줄에 들어가게)
+  const U2=Math.min(100,Math.floor((VW-40)/4)), xc=(VW-4*U2)/2;  // 큰 블록 4칸 (가운데)
+  let h='';
+  if(i===0){ h+=T(10,58,'4',fs)+blocks(L,30,4,'#4FC3F7',U);
+    if(shown){ h+=`<g class="pop">${T(10,118,'4',fs)+blocks(L,90,4,'#FFB74D',U)}</g>`;
+      h+=`<g class="pop" style="animation-delay:.35s">${T(10,188,'4+4',fs)}${blocks(L,160,4,'#4FC3F7',U)}${blocks(L+4*U,160,4,'#FFB74D',U)}${T(L+8*U+10,190,'= 8',fs+4,'#2E7D32')}</g>`; } }
+  if(i===1){ h+=T(10,78,'4',fs)+blocks(L,50,4,'#4FC3F7',U);
+    if(shown) h+=`<g class="pop">${T(10,158,'4의 1배',nar?15:fs)}${blocks(L,130,4,'#4FC3F7',U)}${T(L+4*U+10,160,nar?'= 4':'= 4  (그대로!)',fs+2,'#2E7D32')}</g>`; }
+  if(i===2){
+    if(!shown) h+=blocks(xc,90,4,'#90CAF9',U2)+T(VW/2,72,'4',28,'#37474F','middle');
+    else { h+=`<g class="mdrag" style="transform:translate(0px,0px)">${blocks(xc,90,2,'#FF8A65',U2)}${T(xc+U2,166,'2',28,'#D84315','middle')}</g>`;
+           h+=`<g class="mdrag" style="transform:translate(0px,0px)">${blocks(xc+2*U2,90,2,'#4FC3F7',U2)}${T(xc+3*U2,166,'2',28,'#0277BD','middle')}</g>`;
+           h+=`<line x1="${VW/2}" y1="70" x2="${VW/2}" y2="150" stroke="#D84315" stroke-width="3" stroke-dasharray="7 5"/>`+T(VW/2,58,'반으로 똑같이 나누기',nar?15:18,'#D84315','middle'); } }
+  if(i===3){ const bw=Math.min(400,VW-40), bx=(VW-bw)/2; h+=T(VW/2,52,'전체 1',20,'#37474F','middle');
+    if(!shown) h+=`<rect x="${bx}" y="70" width="${bw}" height="56" rx="6" fill="#ECEFF1" stroke="#37474F" stroke-width="2"/>`;
+    else h+=`<rect class="pop" x="${bx}" y="70" width="${bw/2}" height="56" fill="#FF8A65" stroke="#37474F" stroke-width="2"/><rect x="${bx+bw/2}" y="70" width="${bw/2}" height="56" fill="#ECEFF1" stroke="#37474F" stroke-width="2"/>`+
+            `<g class="pop">${svgParts(bx+bw/4-14,170,[{f:[1,2]}],30,'#D84315')}</g>`; }
+  if(i===4){ const W4=Math.min(100,Math.floor((VW-L-10)/4));
+    h+=T(10,108,'4',fs)+blocks(L,80,4,'#90CAF9',W4);
+    if(shown) h+=`<g class="pop">${blocks(L,80,2,'#FF8A65',W4)}<path d="M${L+4} 140 V152 H${L+2*W4-4} V140" fill="none" stroke="#D84315" stroke-width="3"/>${svgParts(L,186,['4 × ',{f:[1,2]},' = 2'],nar?20:24,'#D84315')}</g>`; }
+  if(i===5){ const x0=nar?78:200, U5=Math.floor((VW-x0-20)/8);
+    for(let u=0;u<=8;u++) h+=`<line x1="${x0+u*U5}" y1="20" x2="${x0+u*U5}" y2="215" stroke="#E0D6BF" stroke-dasharray="4 4"/>${T(x0+u*U5,236,u,15,'#8D6E63','middle')}`;
+    h+=T(10,58,'4',fs)+`<rect x="${x0}" y="32" width="${4*U5}" height="40" fill="#B0BEC5" stroke="#37474F"/>`;
+    if(shown){ h+=`<g class="pop">${T(10,124,'4 × 2',nar?17:fs)}<rect x="${x0}" y="98" width="${8*U5}" height="40" fill="#4FC3F7" stroke="#37474F"/>${T(x0+8*U5-8,90,'커졌어요 ↑',nar?14:16,'#0277BD','end')}</g>`;
+      h+=`<g class="pop" style="animation-delay:.35s">${svgParts(10,184,['4 × ',{f:[1,2]}],nar?17:fs,'#37474F')}<rect x="${x0}" y="164" width="${2*U5}" height="40" fill="#FF8A65" stroke="#37474F"/>${T(x0+2*U5+10,190,'작아졌어요 ↓',nar?14:16,'#D84315')}</g>`; }
+    else h+=T(x0+4*U5,130,'?',60,'#BDBDBD','middle'); }
+  return {h,H};
+}
+function fracBar(x,y,wd,b,a,col,hg=44,empty='#ECEFF1'){
+  let s=''; const pw=wd/b;
+  for(let k=0;k<b;k++) s+=`<rect x="${x+k*pw}" y="${y}" width="${pw}" height="${hg}" fill="${k<a?col:empty}" stroke="#37474F" stroke-width="1.3"/>`;
+  return s+`<rect x="${x}" y="${y}" width="${wd}" height="${hg}" fill="none" stroke="#263238" stroke-width="2.4"/>`;
+}
+const center = (p,size)=>VW/2-partsW(p,size)/2;
+function vzFracBar(sh){ const {a,b}=S, wd=Math.min(420,VW-40), x=(VW-wd)/2;
+  let h=fracBar(x,40,wd,b,a,'#FF8A65',56);
+  if(sh) h+=`<g class="pop">${svgParts(x+wd*a/b/2-fracW(a,b,30)/2,140,[{f:[a,b]}],30,'#D84315')}</g>`;
+  return {h,H:190}; }
+function vzCopies(sh,count){
+  const {a,b,n}=S, gap=NARROW()?18:26, wd=Math.min(180,Math.floor((VW-20-(n-1)*gap)/n)), x0=(VW-(n*wd+(n-1)*gap))/2;
+  let h='', H=100;
+  for(let i=0;i<n;i++){ const x=x0+i*(wd+gap); h+=fracBar(x,30,wd,b,a,PAL[i%PAL.length],40);
+    if(i<n-1) h+=T(x+wd+gap/2,57,'+',20,'#5D4037','middle'); }
+  if(sh && !count){ const p=[{f:[a,b]},`${j(a,'을','를')} ${n}번 더해요`]; h+=`<g class="pop">${svgParts(center(p,20),104,p,20,'#2E7D32')}</g>`; H=130; }
+  if(sh && count){ const tot=a*n, units=Math.max(1,Math.ceil(tot/b)), uw=Math.min(200,Math.floor((VW-40)/units)), ux=(VW-units*uw)/2, pw=uw/b;
+    let g='<g class="pop">';
+    for(let k=0;k<units*b;k++) g+=`<rect x="${ux+k*pw}" y="96" width="${pw}" height="40" fill="${k<tot?PAL[Math.floor(k/a)%PAL.length]:'#FFFFFF'}" stroke="#37474F" stroke-width="1.2"/>`;
+    for(let u=0;u<units;u++) g+=`<rect x="${ux+u*uw}" y="96" width="${uw}" height="40" fill="none" stroke="#263238" stroke-width="2.4"/>`;
+    const p=[{f:[1,b]},`${j(1,'이','가')} 모두 ${tot}개`]; h+=g+svgParts(center(p,20),170,p,20,'#2E7D32')+'</g>'; H=200; }
+  return {h,H}; }
+function vzCompareA(sh){ const {a,b,n}=S;
+  const rows=[{label:[{f:[a,b]}],segs:[{len:a,color:PAL[0]}]}];
+  if(sh) rows.push({label:[{f:[a,b]},` × ${n}`],segs:Array.from({length:n},(_,i)=>({len:a,color:PAL[i%PAL.length]}))});
+  drawBars($('#motSvg'),rows,b); return null; }
+function vzMixed(sh){ const {a,b,w}=S, units=w+1, uw=Math.min(170,Math.floor((VW-40)/units)), x0=(VW-units*uw)/2;
+  let h=''; for(let u=0;u<w;u++) h+=fracBar(x0+u*uw,40,uw,b,b,PAL[2],48);
+  h+=fracBar(x0+w*uw,40,uw,b,a,PAL[2],48);
+  if(sh){ let g='<g class="pop">'; for(let u=0;u<w;u++) g+=T(x0+u*uw+uw/2,120,'1',22,'#37474F','middle');
+    g+=svgParts(x0+w*uw+uw/2-fracW(a,b,22)/2,114,[{f:[a,b]}],22,'#37474F');
+    const p=[`${w} + `,{f:[a,b]},' = ',{m:[w,a,b]}]; h+=g+svgParts(center(p,22),168,p,22,'#2E7D32')+'</g>'; }
+  return {h,H:200}; }
+function vzMixedCopies(sh,hl){ const {a,b,w,n}=S, units=w+1, lab=30, uw=Math.min(120,Math.floor((VW-lab-30)/units)), x0=(VW-lab-units*uw)/2+lab;
+  let h='';
+  for(let r=0;r<n;r++){ const y=14+r*50, col=PAL[r%PAL.length];
+    const wc = sh&&hl==='frac' ? '#E0E0E0' : col, fc = sh&&hl==='whole' ? '#E0E0E0' : col;
+    h+=T(x0-12,y+27,`${r+1}`,18,'#8D6E63','end');
+    for(let u=0;u<w;u++) h+=fracBar(x0+u*uw,y,uw,b,b,wc,38);
+    h+=fracBar(x0+w*uw,y,uw,b,a,fc,38); }
+  let H=14+n*50;
+  if(sh){ const p = hl==='whole' ? [`꽉 찬 1이 ${w}개씩 ${n}번 → ${w*n}개`]
+                : hl==='frac' ? [{f:[a,b]},`${j(a,'을','를')} ${n}번 → `,{f:[a*n,b]}]
+                : [{m:[w,a,b]},`${j(a,'을','를')} ${n}번 더해요`];
+    h+=`<g class="pop">${svgParts(center(p,20),H+16,p,20,'#2E7D32')}</g>`; H+=44; }
+  return {h,H}; }
+function vzBridgeB(){ const {a,b,n}=S, U=Math.min(70,Math.floor((VW-40)/n)), x0=(VW-n*U)/2;
+  let h=blocks(x0,30,n,'#90CAF9',U)+T(VW/2,22,`${n}`,20,'#37474F','middle');
+  const p=[`${n}의 `,{f:[a,b]},'배는 얼마일까요?']; h+=svgParts(center(p,22),118,p,22,'#0277BD');
+  return {h,H:160}; }
+
+/* 보기 만들기 (중복 없이 섞기) */
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const k=Math.floor(Math.random()*(i+1)); [arr[i],arr[k]]=[arr[k],arr[i]]; } return arr; }
+function mkOpts(correct,wrongs,keepOrder){ const seen=new Set([correct]), out=[{h:correct,ok:true}];
+  wrongs.forEach(x=>{ if(!seen.has(x) && out.length<3){ seen.add(x); out.push({h:x,ok:false}); } });
+  return keepOrder?out:shuffle(out); }
+
+/* 유형별 질문 목록 — 마지막 ★카드에서 모형 활동으로 이어짐 */
+function motSet(){
+  const {mode,a,b,n,w}=S, fa=F(a,b), mx=M(w,a,b);
+  const L=[
+    {q:'4 × 2는 어떤 뜻일까요?', opts:mkOpts('4를 2번 더해요',['4에서 2를 빼요','4와 2를 붙여서 42로 써요']),
+     a:'4 × 2는 4를 2번 더한 것이에요. 4 + 4 = 8', viz:sh=>legacyViz(0,sh)},
+    {q:'그렇다면 4의 1배는 얼마일까요?', opts:mkOpts('4',['1','5']),
+     a:'4의 1배는 4 그대로예요. (4 × 1 = 4)', viz:sh=>legacyViz(1,sh)}
+  ];
+  if(mode==='A'){
+    L.push({q:'색칠한 부분은 전체의 얼마일까요?', opts:mkOpts(fa,[F(b,a),F(b-a,b),F(a,b+a)]),
+      a:`전체를 똑같이 ${b}로 나눈 것 중의 ${a} → ${fa}`, viz:vzFracBar});
+    L.push({q:`${fa} × ${n}${j(n,'은','는')} 어떤 뜻일까요?`,
+      opts:mkOpts(`${fa}${j(a,'을','를')} ${n}번 더해요`,[`${fa}에서 ${n}${j(n,'을','를')} 빼요`,`${fa}${j(a,'을','를')} ${n}으로 나눠요`]),
+      a:`4 × 2가 4를 2번 더한 것처럼, ${fa} × ${n}${j(n,'은','는')} ${fa}${j(a,'을','를')} ${n}번 더한 것이에요.`, viz:sh=>vzCopies(sh,false)});
+    L.push({q:`${fa}${j(a,'을','를')} ${n}번 더하면 ${F(1,b)}${j(1,'이','가')} 모두 몇 개일까요?`,
+      opts:mkOpts(`${a*n}개`,[`${a+n}개`,`${n}개`,`${b*n}개`,`${a*n+1}개`]),
+      a:`${F(1,b)}${j(1,'이','가')} ${a}개씩 ${n}번 → ${a} × ${n} = ${a*n}개`, viz:sh=>vzCopies(sh,true)});
+    L.push({q:`${fa} × ${n}의 답은 ${fa}보다 클까요, 작을까요?`, opts:mkOpts(n>1?'커요':'같아요', n>1?['작아요','같아요']:['커요','작아요'],true),
+      a: n>1 ? `1보다 큰 수 ${n}${j(n,'을','를')} 곱하니까 ${fa}보다 커져요.` : '1을 곱하면 그대로예요.', viz:vzCompareA});
+    L.push({bridge:true, q:`${fa} × ${n}${j(n,'은','는')} 얼마일까요?<br>조각을 직접 모아서 알아봐요!`, viz:()=>vzCopies(false)});
+  }
+  if(mode==='B'){
+    L.push({q:'4의 절반은 얼마일까요?', opts:mkOpts('2',['1','8']),
+      a:'막대를 똑같이 둘로 나누면 한쪽은 2예요. 두 조각을 끌어서 나누어 보세요!', viz:sh=>legacyViz(2,sh)});
+    L.push({q:'절반을 분수로 어떻게 나타낼까요?', opts:mkOpts(F(1,2),[F(2,1),F(1,4)]),
+      a:`전체를 똑같이 2로 나눈 것 중의 1 → ${F(1,2)}`, viz:sh=>legacyViz(3,sh)});
+    L.push({q:`그러면 4 × ${F(1,2)}은 무엇을 뜻할까요?`, opts:mkOpts('4의 절반',['4를 2번 더한 것',`4에 ${F(1,2)}을 더한 것`]),
+      a:`4 × ${F(1,2)}은 4의 ${F(1,2)}배, 곧 4의 절반이에요! 4 × ${F(1,2)} = 2`, viz:sh=>legacyViz(4,sh)});
+    L.push({q:'곱셈을 하면 항상 커질까요?', opts:mkOpts('아니요, 작아질 때도 있어요',['네, 항상 커져요'],true).reverse(),
+      a:'1보다 작은 수를 곱하면 오히려 작아져요.', viz:sh=>legacyViz(5,sh)});
+    const same = n===4 && a===1 && b===2;
+    L.push({bridge:true, q: same ? `이제 4 × ${F(1,2)}${j(1,'을','를')} 모형으로 직접 알아볼까요?`
+                             : `${n} × ${fa}${j(a,'은','는')} ${n}의 ${fa}배예요.<br>얼마인지 모형으로 알아볼까요?`, viz:vzBridgeB});
+  }
+  if(mode==='C'){
+    L.push({q:`${mx}${j(a,'은','는')} 어떤 수일까요?`,
+      opts:mkOpts(`${w}${j(w,'과','와')} ${fa}${j(a,'을','를')} 더한 수`,[`${w}에 ${fa}${j(a,'을','를')} 곱한 수`,`${w}${a}${j(a,'을','를')} ${b}로 나눈 수`]),
+      a:`${mx}${j(a,'은','는')} ${w}${j(w,'과','와')} ${fa}${j(a,'을','를')} 더한 수예요. 꽉 찬 1이 ${w}개, ${F(1,b)}${j(1,'이','가')} ${a}개!`, viz:vzMixed});
+    L.push({q:`${mx} × ${n}${j(n,'은','는')} 어떤 뜻일까요?`,
+      opts:mkOpts(`${mx}${j(a,'을','를')} ${n}번 더해요`,[`${mx}에서 ${n}${j(n,'을','를')} 빼요`,`${w} × ${n}만 하면 돼요`]),
+      a:`4 × 2처럼 ${mx}${j(a,'을','를')} ${n}번 더한 것이에요.`, viz:sh=>vzMixedCopies(sh,'')});
+    L.push({q:`${mx}${j(a,'을','를')} ${n}번 더하면, 꽉 찬 1은 모두 몇 개일까요?`,
+      opts:mkOpts(`${w*n}개`,[`${w+n}개`,`${w}개`,`${n}개`,`${w*n+1}개`]),
+      a:`꽉 찬 1이 ${w}개씩 ${n}번 → ${w} × ${n} = ${w*n}개`, viz:sh=>vzMixedCopies(sh,'whole')});
+    L.push({q:`이번엔 ${fa}${j(a,'을','를')} ${n}번 더하면 얼마일까요?`,
+      opts:mkOpts(F(a*n,b),[F(a*n,b*n),F(a+n,b),F(a,b*n)]),
+      a:`${F(1,b)}${j(1,'이','가')} ${a}개씩 ${n}번 → ${F(a*n,b)}`, viz:sh=>vzMixedCopies(sh,'frac')});
+    L.push({bridge:true, q:`그럼 ${mx} × ${n}${j(n,'은','는')} 모두 얼마일까요?<br>꽉 찬 1과 조각을 직접 모아 봐요!`, viz:()=>vzMixedCopies(false,'')});
+  }
+  return L;
+}
+function renderMot(){
+  const L=S.motItems, i=S.mot, it=L[i], ok=S.motSolved.has(i), done=it.bridge||ok;
+  $('#motDots').innerHTML = L.map((x,k)=>`<span class="${k===i?'on':S.motSolved.has(k)?'done':''}" data-mot="${k}"></span>`).join('');
+  $('#motQ').innerHTML = `<span class="num">${it.bridge?'★':i+1}</span>${it.q}`;
+  $('#motOpts').innerHTML = it.bridge ? `<button id="motGo" class="btn main big">모형으로 직접 해 볼래요 ▶</button>`
+    : it.opts.map((o,k)=>`<button class="opt ${ok&&o.ok?'ok':''} ${S.motWrong.includes(k)?'no':''} ${k===S.motLast&&!ok?'shake':''}" data-opt="${k}" ${ok?'disabled':''}>${o.h}</button>`).join('');
+  const A=$('#motA');
+  A.className='motA'+(ok||it.bridge?'':' hint');
+  A.innerHTML = it.bridge ? '' : ok ? `<b>정답이에요!</b> ${it.a}` : (S.motWrong.length ? '다시 한번 생각해 볼까요?' : '');
+  $('#motPrev').disabled = i===0;
+  $('#motNext').style.visibility = it.bridge ? 'hidden' : 'visible';
+  $('#motNext').disabled = !ok;
+  const r=it.viz(done), svg=$('#motSvg');
+  if(r){ svg.setAttribute('viewBox',`0 0 ${VW} ${r.H}`); svg.innerHTML=r.h; }
+}
+function pickOpt(k){
+  const it=S.motItems[S.mot]; if(it.bridge || S.motSolved.has(S.mot)) return;
+  if(it.opts[k].ok) S.motSolved.add(S.mot); else if(!S.motWrong.includes(k)) S.motWrong.push(k);
+  S.motLast=k; renderMot();
+}
+function motMove(d){ const i=S.mot+d; if(i<0||i>=S.motItems.length) return; S.mot=i; S.motWrong=[]; S.motLast=-1; renderMot(); }
+function initMotDrag(){
+  const svg=$('#motSvg'); let md=null;
+  const pt=e=>{const p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse());};
+  svg.addEventListener('touchstart',e=>{ if(e.target.closest('.mdrag')) e.preventDefault(); },{passive:false});
+  svg.addEventListener('pointerdown',e=>{ if(md) return; const g=e.target.closest('.mdrag'); if(!g) return; const p=pt(e);
+    md={g,pid:e.pointerId,sx:p.x,sy:p.y,tx:+(g.dataset.tx||0),ty:+(g.dataset.ty||0)}; try{svg.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); });
+  svg.addEventListener('pointermove',e=>{ if(!md || e.pointerId!==md.pid) return; const p=pt(e); const x=md.tx+p.x-md.sx, y=md.ty+p.y-md.sy;
+    md.g.dataset.tx=x; md.g.dataset.ty=y; md.g.style.transform=`translate(${x}px,${y}px)`; });
+  const up=e=>{ if(md && e.pointerId===md.pid) md=null; }; svg.addEventListener('pointerup',up); svg.addEventListener('pointercancel',up);
+}
+
+/* =========================================================
+   이벤트 연결
+   ========================================================= */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,span[data-mot]'); if(!t) return;
+  if(t.dataset.step!=null) return goStep(+t.dataset.step);
+  if(t.dataset.k) return setVal(t.dataset.k,+t.dataset.d);
+  if(t.dataset.mode){ S.mode=t.dataset.mode; QZ=null; return onProblemChange(); }
+  if(t.dataset.model){ S.model=t.dataset.model; renderControls(); S.K=null; return build(); }
+  if(t.dataset.start) return startLesson(t.dataset.start);
+  if(t.dataset.opt!=null) return pickOpt(+t.dataset.opt);
+  if(t.dataset.mot!=null){ S.mot=+t.dataset.mot-0; return motMove(0); }
+  switch(t.id){
+    case 'swapBtn': { const from=exprHTML(); S.mode = S.mode==='A'?'B':'A'; QZ=null; onProblemChange();
+      toast(`곱하는 순서를 바꾸었어요: ${from} → ${exprHTML()}<br>결과는 같을까요?`); break; }
+    case 'randBtn': { S.b=ri(2,8); S.a=ri(1,S.b-1); S.n=ri(2,S.mode==='C'?4:6); S.w=ri(1,2); onProblemChange(); break; }
+    case 'kMinus': if(S.K>1){ S.K--; layoutFrames(); updateResult(); } break;
+    case 'kPlus':  if(S.K<40){ S.K++; layoutFrames(); updateResult(); } break;
+    case 'bS1': S.bStage=1; build(); break;
+    case 'bS2': S.bStage=2; build(); break;
+    case 'gatherBtn': gatherAll(); break;
+    case 'resetBtn': S.bStage=0; S.K=null; build(); break;
+    case 'addNext': S.addShown++; drawNL(); break;
+    case 'addAll': S.addShown=99; drawNL(); break;
+    case 'addReset': S.addShown=0; drawNL(); break;
+    case 'qCheck': checkQuiz(); break;
+    case 'qNew': newQuiz(); break;
+    case 'motPrev': motMove(-1); break;
+    case 'motNext': motMove(1); break;
+    case 'motGo': goStep(1); break;
+    case 'homeBtn': goStep(-1); break;
+    case 'prevStep': goStep(S.step-1); break;
+    case 'nextStep': goStep(S.step===3?-1:S.step+1); break;
+  }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.classList.contains('qin')) checkQuiz(); });
+
+/* 화면 크기·방향이 바뀌면 그림을 다시 맞춤 */
+function rerender(){ if(S.step<0) return; if(S.step===0) renderMot(); if(S.step===1) build(); if(S.step===2) drawNL();
+  if(S.step===3){ renderTimes(); } }
+let _rz; function onResize(){ clearTimeout(_rz); _rz=setTimeout(()=>{ if(drag) return; const old=VW; applyVW();
+  if(Math.abs(VW-old)>24){ rerender(); if(S.step===1) toast('화면 크기가 바뀌어 모형을 다시 놓았어요.'); } },250); }
+window.addEventListener('resize',onResize);
+window.addEventListener('orientationchange',onResize);
+
+applyVW(); initDrag(); initMotDrag(); goStep(-1);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ if(!drag && S.step!==1 && S.step>=0) rerender(); });
+if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
